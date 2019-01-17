@@ -2,7 +2,8 @@ prefix ?= /usr
 sysconfdir ?= /etc
 exec_prefix = $(prefix)
 bindir = $(exec_prefix)/bin
-libdir = $(exec_prefix)/lib
+sbindir = $(exec_prefix)/sbin
+libdir = $(exec_prefix)/lib64
 includedir = $(prefix)/include
 datarootdir = $(prefix)/share
 datadir = $(datarootdir)
@@ -27,7 +28,7 @@ install-cli: target/release/$(CLI)
 	install -D -m 0755 "target/release/$(CLI)" "$(DESTDIR)$(bindir)/$(CLI)"
 
 install-daemon: target/release/$(DAEMON)
-	install -D -m 0755 "target/release/$(DAEMON)" "$(DESTDIR)$(libdir)/$(PKG)/$(DAEMON)"
+	install -D -m 0755 "target/release/$(DAEMON)" "$(DESTDIR)$(sbindir)/$(DAEMON)"
 	install -D -m 0644 "data/$(DAEMON).conf" "$(DESTDIR)$(sysconfdir)/dbus-1/system.d/$(DAEMON).conf"
 	install -D -m 0644 "debian/$(DAEMON).service" "$(DESTDIR)$(sysconfdir)/systemd/system/$(DAEMON).service"
 
@@ -37,7 +38,7 @@ uninstall-cli:
 	rm -f "$(DESTDIR)$(bindir)/$(CLI)"
 
 uninstall-daemon:
-	rm -f "$(DESTDIR)$(libdir)/$(PKG)/$(DAEMON)"
+	rm -f "$(DESTDIR)$(sbindir)/$(DAEMON)"
 	rm -f "$(DESTDIR)$(sysconfdir)/dbus-1/system.d/$(DAEMON).conf"
 	rm -f "$(DESTDIR)$(sysconfdir)/systemd/system/$(DAEMON).service"
 
