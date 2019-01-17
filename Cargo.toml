@@ -12,7 +12,7 @@ name = "system76-firmware-daemon"
 path = "src/bin/daemon.rs"
 
 [dependencies]
-buildchain = "0.4.5"
+buildchain = { git = "https://github.com/szydell/buildchain" }
 dbus = "0.6"
 ecflash = { git = "https://github.com/system76/ecflash.git", branch = "stable" }
 libc = "0.2"
