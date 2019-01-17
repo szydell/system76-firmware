@@ -21,6 +21,11 @@ BuildRequires: cargo
 %{?systemd_requires}
 BuildRequires: systemd
 BuildRequires: dbus-devel
+BuildRequires: xz-devel
+BuildRequires: libsodium-devel 
+BuildRequires: openssl-devel
+
+
 
 #Packages required to work
 Requires: dbus-common 
