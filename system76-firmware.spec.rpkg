@@ -25,11 +25,12 @@ BuildRequires: xz-devel
 BuildRequires: libsodium-devel 
 BuildRequires: openssl-devel
 
-
-
 #Packages required to work
 Requires: dbus-common 
 Requires: systemd
+#system76-driver provides python library needed by the system76-firmware application
+Requires: system76-driver
+
 
 
 # More detailed description of the package
