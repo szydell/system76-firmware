@@ -16,6 +16,7 @@ use std::path::Path;
 
 pub mod config;
 pub mod download;
+pub mod util;
 
 mod bios;
 mod boot;
@@ -23,10 +24,9 @@ mod ec;
 mod me;
 mod mount;
 mod thelio_io;
-mod util;
 
 pub use bios::bios;
-pub use ec::ec;
+pub use ec::{ec, ec_or_none};
 pub use me::me;
 pub use thelio_io::{
     ThelioIo, ThelioIoMetadata,
@@ -89,11 +89,15 @@ pub fn err_str<E: ::std::fmt::Display>(err: E) -> String {
     format!("{}", err)
 }
 
+pub fn generate_firmware_id(model: &str, project: &str) -> String {
+    let project_hash = util::sha256(project.as_bytes());
+    format!("{}_{}", model, project_hash)
+}
+
 pub fn firmware_id() -> Result<String, String> {
     let (bios_model, _bios_version) = bios::bios()?;
-    let (ec_project, _ec_version) = ec::ec_or_none(true);
-    let ec_hash = util::sha256(ec_project.as_bytes());
-    Ok(format!("{}_{}", bios_model, ec_hash))
+    let (ec_project, _ec_version) = ec_or_none(true);
+    Ok(generate_firmware_id(&bios_model, &ec_project))
 }
 
 fn remove_dir<P: AsRef<Path>>(path: P) -> Result<(), String> {
@@ -111,8 +115,10 @@ fn remove_dir<P: AsRef<Path>>(path: P) -> Result<(), String> {
 }
 
 pub fn download() -> Result<(String, String), String> {
-    let firmware_id = firmware_id()?;
+    download_firmware_id(&firmware_id()?)
+}
 
+pub fn download_firmware_id(firmware_id: &str) -> Result<(String, String), String> {
     let dl = Downloader::new(
         config::KEY,
         config::URL,
@@ -170,22 +176,24 @@ fn extract<P: AsRef<Path>>(digest: &str, file: &str, path: P) -> Result<(), Stri
     Ok(())
 }
 
-pub fn schedule(digest: &str) -> Result<(), String> {
-    let firmware_id = firmware_id()?;
+pub fn schedule(digest: &str, efi_dir: &str) -> Result<(), String> {
+    schedule_firmware_id(digest, efi_dir, &firmware_id()?)
+}
 
+pub fn schedule_firmware_id(digest: &str, efi_dir: &str, firmware_id: &str) -> Result<(), String> {
     if ! Path::new("/sys/firmware/efi").exists() {
         return Err(format!("must be run using UEFI boot"));
     }
 
     let updater_file = "system76-firmware-update.tar.xz";
     let firmware_file = format!("{}.tar.xz", firmware_id);
-    let updater_dir = Path::new("/boot/efi/system76-firmware-update");
+    let updater_dir = Path::new(efi_dir).join("system76-firmware-update");
 
     boot::unset_next_boot()?;
 
     remove_dir(&updater_dir)?;
 
-    let updater_tmp = match tempdir::TempDir::new_in("/boot/efi", "system76-firmware-update") {
+    let updater_tmp = match tempdir::TempDir::new_in(efi_dir, "system76-firmware-update") {
         Ok(ok) => ok,
         Err(err) => {
             return Err(format!("failed to create temporary directory: {}", err));
@@ -206,15 +214,15 @@ pub fn schedule(digest: &str) -> Result<(), String> {
         }
     }
 
-    boot::set_next_boot()?;
+    boot::set_next_boot(efi_dir)?;
 
     eprintln!("Firmware update scheduled. Reboot your machine to install.");
 
     Ok(())
 }
 
-pub fn unschedule() -> Result<(), String> {
-    let updater_dir = Path::new("/boot/efi/system76-firmware-update");
+pub fn unschedule(efi_dir: &str) -> Result<(), String> {
+    let updater_dir = Path::new(efi_dir).join("system76-firmware-update");
 
     boot::unset_next_boot()?;
 

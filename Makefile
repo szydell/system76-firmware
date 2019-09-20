@@ -52,5 +52,5 @@ target/release/$(CLI) target/release/$(DAEMON): Cargo.lock Cargo.toml src/* src/
 		cargo build -p $(DAEMON) --release --frozen; \
 	else \
 		cargo build --release; \
-		cargo build -p $(DAEMON) --release --frozen; \
+		cargo build -p $(DAEMON) --release; \
 	fi
