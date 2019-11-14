@@ -56,6 +56,7 @@ make install DESTDIR=%{buildroot}
 # do after installation
 %post
 %systemd_post system76-firmware-daemon.service
+systemctl daemon-reload >/dev/null 2>&1 || :
 
 # do before uninstallation
 %preun
@@ -63,7 +64,10 @@ make install DESTDIR=%{buildroot}
 
 # do after unistallation
 %postun
+systemctl daemon-reload >/dev/null 2>&1 || :
 %systemd_postun_with_restart system76-firmware-daemon.service
+
+
 
 # Those files will be in the rpm
 %files
