@@ -1,5 +1,6 @@
 extern crate buildchain;
 extern crate ecflash;
+extern crate ectool;
 extern crate libc;
 extern crate lzma;
 extern crate plain;
@@ -57,7 +58,9 @@ const MODEL_WHITELIST: &[&str] = &[
     "lemu6",
     "lemu7",
     "lemu8",
+    "lemp9",
     "meer4",
+    "meer5",
     "orxp1",
     "oryp2",
     "oryp2-ess",
