@@ -6,10 +6,10 @@ use std::{io, process, rc};
 use system76_firmware::*;
 use system76_firmware_daemon::*;
 
-fn bios_vendor() -> Result<String, String> {
-    match util::read_string("/sys/class/dmi/id/bios_vendor") {
+fn dmi_vendor() -> Result<String, String> {
+    match util::read_string("/sys/class/dmi/id/sys_vendor") {
         Ok(ok) => Ok(ok.trim().to_string()),
-        Err(err) => Err(format!("failed to read BIOS vendor: {}", err)),
+        Err(err) => Err(format!("failed to read DMI system vendor: {}", err)),
     }
 }
 
@@ -31,7 +31,11 @@ fn daemon() -> Result<(), String> {
         None => return Err("EFI mount point not found".into())
     };
 
-    let in_whitelist = bios().ok().map_or(false, |(model, _)| model_is_whitelisted(&*model));
+    let in_whitelist =
+        dmi_vendor().ok().map_or(false, |vendor| vendor.contains("System76")) &&
+        bios().ok().map_or(false, |(model, _)| model_is_whitelisted(&*model));
+
+    let transition_kind = TransitionKind::Automatic;
 
     let c = Connection::new_system().map_err(err_str)?;
     c.register_name(DBUS_DEST, NameFlag::ReplaceExisting as u32)
@@ -115,7 +119,7 @@ fn daemon() -> Result<(), String> {
                         if !in_whitelist {
                             return Err(MethodErr::failed(&"product is not in whitelist"));
                         }
-                        match firmware_id() {
+                        match firmware_id(transition_kind) {
                             Ok(id) => {
                                 let mret = m.msg.method_return().append1(id);
                                 Ok(vec![mret])
@@ -134,7 +138,7 @@ fn daemon() -> Result<(), String> {
                         if !in_whitelist {
                             return Err(MethodErr::failed(&"product is not in whitelist"));
                         }
-                        match download() {
+                        match download(transition_kind) {
                             Ok((digest, changelog)) => {
                                 let mret = m.msg.method_return().append2(digest, changelog);
                                 Ok(vec![mret])
@@ -157,7 +161,7 @@ fn daemon() -> Result<(), String> {
                             if !in_whitelist {
                                 return Err(MethodErr::failed(&"product is not in whitelist"));
                             }
-                            match schedule(digest, &efi_dir) {
+                            match schedule(digest, &efi_dir, transition_kind) {
                                 Ok(()) => {
                                     let mret = m.msg.method_return();
                                     Ok(vec![mret])

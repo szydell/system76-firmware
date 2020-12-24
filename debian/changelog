@@ -1,3 +1,40 @@
+system76-firmware (1.0.20) focal; urgency=medium
+
+  * Add galp5, lemp10, pang10, and thelio-mira-r1
+
+ -- Jeremy Soller <jeremy@system76.com>  Tue, 10 Nov 2020 20:13:55 -0700
+
+system76-firmware (1.0.19) focal; urgency=medium
+
+  * Update ectool to ensure locked EC access
+  * Test that DMI vendor contains System76
+
+ -- Jeremy Soller <jeremy@system76.com>  Fri, 02 Oct 2020 08:07:30 -0600
+
+system76-firmware (1.0.18) focal; urgency=medium
+
+  * Fix CLI argument parsing of --proprietary
+
+ -- Jeremy Soller <jeremy@system76.com>  Wed, 23 Sep 2020 11:25:40 -0600
+
+system76-firmware (1.0.17) focal; urgency=medium
+
+  * Fallback when passed transition arguments on unsupported model
+
+ -- Jeremy Soller <jeremy@system76.com>  Fri, 18 Sep 2020 10:05:32 -0600
+
+system76-firmware (1.0.16) focal; urgency=medium
+
+  * Support for transitioning to open firmware
+
+ -- Jeremy Soller <jeremy@system76.com>  Fri, 11 Sep 2020 13:59:39 -0600
+
+system76-firmware (1.0.15) focal; urgency=medium
+
+  * Add thelio-major-r2.1 and thelio-mega-r1.1
+
+ -- Jeremy Soller <jeremy@system76.com>  Mon, 31 Aug 2020 09:06:21 -0600
+
 system76-firmware (1.0.14) focal; urgency=medium
 
   * Add bonw14

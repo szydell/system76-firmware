@@ -8,11 +8,19 @@ includedir = $(prefix)/include
 datarootdir = $(prefix)/share
 datadir = $(datarootdir)
 
+SRC = Cargo.toml Cargo.lock Makefile $(shell find src -type f -wholename '*src/*.rs')
+
 .PHONY: all clean distclean install uninstall update
 
 PKG=system76-firmware
 CLI=$(PKG)-cli
 DAEMON=$(PKG)-daemon
+
+ARGS = --release
+VENDORED ?= 0
+ifeq ($(VENDORED),1)
+	ARGS += --frozen
+endif
 
 all: target/release/$(CLI) target/release/$(DAEMON)
 
@@ -20,7 +28,7 @@ clean:
 	cargo clean
 
 distclean: clean
-	rm -rf .cargo vendor
+	rm -rf .cargo vendor vendor.tar.xz
 
 install: install-cli install-daemon
 
@@ -45,12 +53,16 @@ uninstall-daemon:
 update:
 	cargo update
 
-target/release/$(CLI) target/release/$(DAEMON): Cargo.lock Cargo.toml src/* src/*/*
-	if [ -d vendor ]; \
-	then \
-		cargo build --release --frozen; \
-		cargo build -p $(DAEMON) --release --frozen; \
-	else \
-		cargo build --release; \
-		cargo build -p $(DAEMON) --release; \
-	fi
+vendor:
+	mkdir -p .cargo
+	cargo vendor --sync daemon/Cargo.toml | head -n -1 > .cargo/config
+	echo 'directory = "vendor"' >> .cargo/config
+	tar pcfJ vendor.tar.xz vendor
+	rm -rf vendor
+
+target/release/$(CLI) target/release/$(DAEMON): $(SRC)
+ifeq ($(VENDORED),1)
+	tar pxf vendor.tar.xz
+endif
+	cargo build $(ARGS)
+	cargo build -p $(DAEMON) $(ARGS)
