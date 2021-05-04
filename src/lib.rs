@@ -1,4 +1,8 @@
-use buildchain::{Downloader, Manifest};
+#[macro_use]
+extern crate anyhow;
+
+use anyhow::Context;
+use buildchain::{Block, Downloader, Manifest};
 use std::fs;
 use std::path::Path;
 
@@ -67,6 +71,7 @@ const MODEL_WHITELIST: &[&str] = &[
     "oryp4-b",
     "oryp5",
     "oryp6",
+    "oryp7",
     "pang10",
     "serw9",
     "serw10",
@@ -78,6 +83,7 @@ const MODEL_WHITELIST: &[&str] = &[
     "thelio-major-b1",
     "thelio-major-b1.1",
     "thelio-major-b2",
+    "thelio-major-b3",
     "thelio-major-r1",
     "thelio-major-r2",
     "thelio-major-r2.1",
@@ -158,6 +164,17 @@ pub fn download(transition_kind: TransitionKind) -> Result<(String, String), Str
 }
 
 pub fn download_firmware_id(firmware_id: &str) -> Result<(String, String), String> {
+    let tail_path = Path::new(config::CACHE).join("tail");
+
+    util::retry(
+        || download_firmware_id_(&tail_path, firmware_id),
+        || fs::remove_file(&tail_path)
+            .context("failed to remove tail cache")
+            .map_err(err_str)
+    )
+}
+
+fn download_firmware_id_(tail_cache: &Path, firmware_id: &str) -> Result<(String, String), String> {
     let dl = Downloader::new(
         config::KEY,
         config::URL,
@@ -166,8 +183,15 @@ pub fn download_firmware_id(firmware_id: &str) -> Result<(String, String), Strin
         Some(config::CERT)
     )?;
 
+    if !Path::new(config::CACHE).is_dir() {
+       eprintln!("creating cache directory {}", config::CACHE);
+       fs::create_dir(config::CACHE).map_err(err_str)?;
+    }
+
     eprintln!("downloading tail");
-    let tail = dl.tail()?;
+
+    let fetch_tail = || dl.tail().map_err(|why| anyhow!(why));
+    let tail = cached_block(tail_cache, fetch_tail).map_err(err_str)?;
 
     eprintln!("opening download cache");
     let cache = download::Cache::new(config::CACHE, Some(dl))?;
@@ -194,6 +218,38 @@ pub fn download_firmware_id(firmware_id: &str) -> Result<(String, String), Strin
     let changelog = util::extract_file(&firmware_data, "./changelog.json").map_err(err_str)?;
 
     Ok((tail.digest.to_string(), changelog))
+}
+
+/// Retrieves a `Block` from the cached path if it exists and the modified time is recent.
+///
+/// - If the modified time is older than `stale_after` seconds, the cache will be updated.
+/// - The most recent `Block` from cache will be returned after the cache is updated.
+/// - If the cache does not require an update, it will be returned after being deserialized.
+fn cached_block<F: FnMut() -> anyhow::Result<Block>>(
+    path: &Path,
+    mut func: F
+) -> anyhow::Result<Block>  {
+    let result: anyhow::Result<Block> = (|| {
+        let file = fs::File::open(&path)
+            .context("failed to read cached block")?;
+
+        bincode::deserialize_from(file)
+            .context("failed to deserialize cached block")
+    })();
+
+    if result.is_err() {
+        let block = func().context("failed to fetch block")?;
+
+        let file = fs::File::create(&path)
+            .context("failed to create file for cached block")?;
+
+        bincode::serialize_into(file, &block)
+            .context("failed to cache block")?;
+
+        Ok(block)
+    } else {
+        result
+    }
 }
 
 fn extract<P: AsRef<Path>>(digest: &str, file: &str, path: P) -> Result<(), String> {
