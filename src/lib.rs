@@ -54,10 +54,14 @@ const MODEL_WHITELIST: &[&str] = &[
     "gaze15",
     "gaze16-3050",
     "gaze16-3060",
+    "gaze16-3060-b",
+    "gaze17-3050",
+    "gaze17-3060-b",
     "kudu2",
     "kudu3",
     "kudu4",
     "kudu5",
+    "kudu6",
     "lemu6",
     "lemu7",
     "lemu8",
@@ -87,6 +91,7 @@ const MODEL_WHITELIST: &[&str] = &[
     "serw12",
     "thelio-b1",
     "thelio-b2",
+    "thelio-b3",
     "thelio-major-b1",
     "thelio-major-b1.1",
     "thelio-major-b2",
@@ -98,7 +103,10 @@ const MODEL_WHITELIST: &[&str] = &[
     "thelio-mega-r1",
     "thelio-mega-r1.1",
     "thelio-mira-b1",
+    "thelio-mira-b2",
+    "thelio-mira-b3",
     "thelio-mira-r1",
+    "thelio-mira-r2",
     "thelio-r1",
     "thelio-r2",
 ];
@@ -329,8 +337,10 @@ pub fn schedule_firmware_id(digest: &str, efi_dir: &str, firmware_id: &str) -> R
         }
     }
 
-    // thelio-mira-r1 will not boot to firmware updater unless it is added to BootOrder
-    let modify_order = firmware_id.starts_with("thelio-mira-r1_");
+    // thelio-mira-r1/r2 will not boot to firmware updater unless it is added to BootOrder
+    let modify_order =
+        firmware_id.starts_with("thelio-mira-r1_") ||
+        firmware_id.starts_with("thelio-mira-r2_");
     boot::set_next_boot(efi_dir, modify_order)?;
 
     eprintln!("Firmware update scheduled. Reboot your machine to install.");
@@ -374,4 +384,4 @@ mod timestamp {
     pub fn exceeded(last: u64, current: u64, limit: u64) -> bool {
         current == 0 || last > current || current - last > limit
     }
-} 
+}

@@ -1,3 +1,51 @@
+system76-firmware (1.0.39) jammy; urgency=medium
+
+  * Modify BootOrder for thelio-mira-r2
+
+ -- Jeremy Soller <jeremy@system76.com>  Wed, 25 May 2022 15:15:14 -0600
+
+system76-firmware (1.0.38) jammy; urgency=medium
+
+  * Add thelio-mira-r2
+
+ -- Jeremy Soller <jeremy@system76.com>  Mon, 23 May 2022 09:53:37 -0600
+
+system76-firmware (1.0.37) jammy; urgency=medium
+
+  * Add gaze17
+
+ -- Tim Crawford <tcrawford@system76.com>  Thu, 19 May 2022 16:22:18 -0600
+
+system76-firmware (1.0.36) jammy; urgency=medium
+
+  * Add thelio-mira-b3
+
+ -- Levi Portenier <levi@system76.com>  Fri, 06 May 2022 16:11:18 -0600
+
+system76-firmware (1.0.35) jammy; urgency=medium
+
+  * Add thelio-mira-b2
+
+ -- Levi Portenier <levi@system76.com>  Fri, 06 May 2022 14:21:08 -0600
+
+system76-firmware (1.0.34) impish; urgency=medium
+
+  * Add thelio-b3
+
+ -- Levi Portenier <levi@system76.com>  Tue, 12 Apr 2022 16:53:14 -0600
+
+system76-firmware (1.0.33) focal; urgency=medium
+
+  * Add kudu6
+
+ -- Tim Crawford <tcrawford@system76.com>  Tue, 02 Nov 2021 10:12:45 -0600
+
+system76-firmware (1.0.32) focal; urgency=medium
+
+  * Add gaze16-3060-b
+
+ -- Jeremy Soller <jeremy@system76.com>  Mon, 01 Nov 2021 11:34:07 -0600
+
 system76-firmware (1.0.31) focal; urgency=medium
 
   * Specify tar version 0.4.35 to work around regression
