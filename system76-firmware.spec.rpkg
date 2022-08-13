@@ -3,7 +3,7 @@
 
 Name:       {{{ git_dir_name }}}
 Version:    1.0.42
-Release:    1
+Release:    2
 Summary:    system76-firmware
 License:    GPLv3
 URL:        https://github.com/szydell/system76-firmware
