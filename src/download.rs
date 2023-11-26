@@ -12,13 +12,13 @@ pub struct Cache {
 
 impl Cache {
     pub fn new<P: AsRef<Path>>(path: P, downloader: Option<Downloader>) -> Result<Cache, String> {
-        if ! path.as_ref().is_dir() {
+        if !path.as_ref().is_dir() {
             fs::create_dir(path.as_ref()).map_err(err_str)?;
         }
 
         Ok(Cache {
             path: path.as_ref().to_owned(),
-            downloader
+            downloader,
         })
     }
 
@@ -34,7 +34,7 @@ impl Cache {
             }
 
             let sha = Sha384::new(data.as_slice()).map_err(err_str)?;
-            if &sha.to_base32() == digest {
+            if sha.to_base32() == digest {
                 return Ok(data);
             } else {
                 fs::remove_file(&path).map_err(err_str)?;
