@@ -110,6 +110,7 @@ const MODEL_WHITELIST: &[&str] = &[
     "pang12",
     "pang13",
     "pang14",
+    "pang15",
     "serw9",
     "serw10",
     "serw11",
@@ -145,12 +146,14 @@ const MODEL_WHITELIST: &[&str] = &[
     "thelio-mira-r1",
     "thelio-mira-r2",
     "thelio-mira-r3",
+    "thelio-mira-r4",
     "thelio-r1",
     "thelio-r2",
     "thelio-r3",
     "thelio-r4",
     "thelio-spark-b1",
     "thelio-spark-r1",
+    "thelio-spark-r2",
 ];
 
 pub fn model_is_whitelisted(model: &str) -> bool {
