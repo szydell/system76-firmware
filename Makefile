@@ -8,6 +8,7 @@ includedir = $(prefix)/include
 datarootdir = $(prefix)/share
 datadir = $(datarootdir)
 
+CARGO_BIN ?= cargo
 SRC = Cargo.toml Cargo.lock Makefile $(shell find src -type f -wholename '*src/*.rs')
 
 .PHONY: all clean distclean install uninstall update
@@ -25,7 +26,7 @@ endif
 all: target/release/$(CLI) target/release/$(DAEMON)
 
 clean:
-	cargo clean
+	$(CARGO_BIN) clean
 
 distclean: clean
 	rm -rf .cargo vendor vendor.tar.xz
@@ -64,5 +65,5 @@ target/release/$(CLI) target/release/$(DAEMON): $(SRC)
 ifeq ($(VENDORED),1)
 	tar pxf vendor.tar.xz
 endif
-	cargo build $(ARGS)
-	cargo build -p $(DAEMON) $(ARGS)
+	$(CARGO_BIN) build $(ARGS)
+	$(CARGO_BIN) build -p $(DAEMON) $(ARGS)
