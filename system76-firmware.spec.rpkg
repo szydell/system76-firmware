@@ -72,7 +72,7 @@ systemctl daemon-reload >/dev/null 2>&1 || :
 # Those files will be in the rpm
 %files
 %{_bindir}/system76-firmware-cli
-%{_sbindir}/{{{ git_dir_name }}}-daemon
+/usr/sbin/{{{ git_dir_name }}}-daemon
 %{_sysconfdir}/dbus-1/system.d/{{{ git_dir_name }}}-daemon.conf
 %{_sysconfdir}/systemd/system/{{{ git_dir_name }}}-daemon.service
 
