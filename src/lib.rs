@@ -34,6 +34,7 @@ const MODEL_WHITELIST: &[&str] = &[
     "addw2",
     "addw3",
     "addw4",
+    "addw5",
     "bonw11",
     "bonw12",
     "bonw13",
@@ -71,6 +72,7 @@ const MODEL_WHITELIST: &[&str] = &[
     "gaze17-3060-b",
     "gaze18",
     "gaze19",
+    "gaze20",
     "kudu2",
     "kudu3",
     "kudu4",
@@ -92,6 +94,8 @@ const MODEL_WHITELIST: &[&str] = &[
     "meer8",
     "meer8-b",
     "meer9",
+    "meer10",
+    "meer10-b",
     "orxp1",
     "oryp2",
     "oryp2-ess",
@@ -394,7 +398,9 @@ pub fn schedule_firmware_id(digest: &str, efi_dir: &str, firmware_id: &str) -> R
 
     extract(digest, updater_file, updater_tmp.path())?;
 
-    extract(digest, &firmware_file, updater_tmp.path().join("firmware"))?;
+    // tar will not create a directory if it does not exist in the archive.
+    fs::create_dir(&updater_tmp.path().join("firmware")).map_err(err_str)?;
+    extract(digest, &firmware_file, &updater_tmp.path().join("firmware"))?;
 
     let updater_tmp_dir = updater_tmp.into_path();
     eprintln!(
