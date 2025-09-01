@@ -2,7 +2,7 @@
 # vim: syntax=spec
 
 Name:       {{{ git_dir_name }}}
-Version:    1.0.72
+Version:    1.0.74
 Release:    1
 Summary:    system76-firmware
 License:    GPLv3
