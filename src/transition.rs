@@ -11,6 +11,7 @@ static TRANSITIONS: &[Transition] = &[
     // 15-inch 1650/1650Ti
     Transition::new_variant("gaze15", 3, "NH50DB", false),
     Transition::new("oryp5", "P950Ex", false),
+    Transition::new("gaze20", "V2xxRNP", false),
 ];
 
 struct Transition {
