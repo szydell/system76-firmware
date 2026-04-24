@@ -2,8 +2,8 @@
 name = "system76-firmware"
 version = "1.0.76"
 authors = ["Jeremy Soller <jeremy@system76.com>"]
-edition = "2021"
-rust-version = "1.80"
+edition = "2024"
+rust-version = "1.85"
 
 [workspace]
 members = ["daemon"]
@@ -17,7 +17,7 @@ anyhow = "1.0"
 bincode = "1.3"
 buildchain = "0.5.3"
 clap = { version = "3", features = ["derive"] }
-ecflash = { git = "https://github.com/system76/ecflash.git", branch = "stable" }
+ecflash = { package = "system76_ecflash", git = "https://github.com/system76/ecflash.git", branch = "master" }
 libc = "0.2"
 plain = "0.2"
 rust-lzma = "0.6"
