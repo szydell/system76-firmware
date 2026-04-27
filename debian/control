@@ -5,8 +5,8 @@ Maintainer: Jeremy Soller <jeremy@system76.com>
 Build-Depends:
   debhelper (>=9.20160709),
   ca-certificates,
-  cargo-1.89,
-  rustc-1.89,
+  cargo-1.91,
+  rustc-1.91,
   libdbus-1-dev,
   liblzma-dev,
   libssl-dev,
