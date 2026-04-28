@@ -92,7 +92,7 @@ pub fn ec(primary: bool) -> Result<(String, String), String> {
 
     #[cfg(not(target_arch = "x86_64"))]
     {
-        Err(String::new("ecflash not supported"))
+        Err("ecflash not supported".to_string())
     }
 }
 
