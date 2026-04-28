@@ -9,7 +9,6 @@ edition = "2018"
 
 [dependencies]
 dbus = "0.9"
-enum_derive = "0.1"
 thiserror = "1.0"
 libc = "0.2"
 shrinkwraprs = "0.3"
