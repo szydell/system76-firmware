@@ -1,3 +1,4 @@
+#[cfg(target_arch = "x86_64")]
 use ecflash::{Ec, EcFlash};
 use ectool::{Access, AccessLpcLinux};
 use std::fs::File;
@@ -82,9 +83,17 @@ pub fn ec(primary: bool) -> Result<(String, String), String> {
         }
     }
 
-    // Fall back to proprietary EC interface
-    let mut ec = EcFlash::new(primary)?;
-    Ok((ec.project(), ec.version()))
+    #[cfg(target_arch = "x86_64")]
+    {
+        // Fall back to proprietary EC interface
+        let mut ec = EcFlash::new(primary)?;
+        Ok((ec.project(), ec.version()))
+    }
+
+    #[cfg(not(target_arch = "x86_64"))]
+    {
+        Err("ecflash not supported".to_string())
+    }
 }
 
 pub fn ec_or_none(primary: bool) -> (String, String) {
