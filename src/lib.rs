@@ -23,7 +23,7 @@ pub use crate::bios::bios;
 pub use crate::ec::{ec, ec_or_none};
 pub use crate::me::me;
 pub use crate::thelio_io::{
-    thelio_io_download, thelio_io_list, thelio_io_update, ThelioIo, ThelioIoMetadata,
+    ThelioIo, ThelioIoMetadata, thelio_io_download, thelio_io_list, thelio_io_update,
 };
 pub use crate::transition::TransitionKind;
 
@@ -163,6 +163,7 @@ const MODEL_WHITELIST: &[&str] = &[
     "thelio-mira-r3",
     "thelio-mira-r4",
     "thelio-mira-r5",
+    "thelio-mira-r6",
     "thelio-r1",
     "thelio-r2",
     "thelio-r3",
@@ -175,7 +176,7 @@ const MODEL_WHITELIST: &[&str] = &[
 ];
 
 pub fn model_is_whitelisted(model: &str) -> bool {
-    MODEL_WHITELIST.iter().any(|whitelist| model == *whitelist)
+    MODEL_WHITELIST.contains(&model)
 }
 
 // Helper function for errors
@@ -397,7 +398,8 @@ pub fn schedule_firmware_id(digest: &str, efi_dir: &str, firmware_id: &str) -> R
 
     remove_dir(&updater_dir)?;
 
-    let updater_tmp = match tempfile::TempDir::with_prefix_in("system76-firmware-update.", efi_dir) {
+    let updater_tmp = match tempfile::TempDir::with_prefix_in("system76-firmware-update.", efi_dir)
+    {
         Ok(ok) => ok,
         Err(err) => {
             return Err(format!("failed to create temporary directory: {}", err));
@@ -407,10 +409,10 @@ pub fn schedule_firmware_id(digest: &str, efi_dir: &str, firmware_id: &str) -> R
     extract(digest, updater_file, updater_tmp.path())?;
 
     // tar will not create a directory if it does not exist in the archive.
-    fs::create_dir(&updater_tmp.path().join("firmware")).map_err(err_str)?;
-    extract(digest, &firmware_file, &updater_tmp.path().join("firmware"))?;
+    fs::create_dir(updater_tmp.path().join("firmware")).map_err(err_str)?;
+    extract(digest, &firmware_file, updater_tmp.path().join("firmware"))?;
 
-    let updater_tmp_dir = updater_tmp.into_path();
+    let updater_tmp_dir = updater_tmp.keep();
     eprintln!(
         "moving {} to {}",
         updater_tmp_dir.display(),
